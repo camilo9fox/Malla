@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Malla Interactiva Obstetricia UChile 2020 – Universidad de Chile
+    </title>
+    <meta
+      name="description"
+      content="Explora la malla curricular interactiva de Obstetricia y Puericultura en la Universidad de Chile (Plan 2020). Descubre requisitos por semestre y desbloquea ramos al aprobar."
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #fff0f5;
+        margin: 0;
+        padding: 20px;
+      }
+      h1 {
+        font-family: "Poppins", sans-serif;
+        font-weight: 700;
+        color: #c2185b;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .info-panel {
+        background-color: #ffe4ec;
+        border: 2px solid #f48fb1;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .creditos-info {
+        font-weight: bold;
+        color: #ad1457;
+        font-size: 1.1em;
+      }
+      .malla-grid {
+        display: flex;
+        gap: 30px;
+        overflow-x: auto;
+        padding: 10px;
+        justify-content: flex-start;
+      }
+      .semestre {
+        min-width: 240px;
+        background-color: #ffe4ec;
+        border: 2px solid #f48fb1;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      .semestre h2 {
+        text-align: center;
+        color: #ad1457;
+        font-size: 1.1em;
+        margin-bottom: 12px;
+        border-bottom: 1px solid #f8bbd0;
+        padding-bottom: 6px;
+      }
+      .ciclo-header {
+        text-align: center;
+        font-size: 0.9em;
+        color: #666;
+        margin-bottom: 15px;
+        font-style: italic;
+      }
+      .ramo {
+        background: linear-gradient(145deg, #f8bbd0, #ec9fb9);
+        border: 1px solid #c2185b;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 8px;
+        text-align: center;
+        cursor: pointer;
+        color: #880e4f;
+        font-weight: 600;
+        font-size: 0.85em;
+        box-shadow: 4px 4px 8px #c28aa2, -4px -4px 8px #ffcee1;
+        transition: all 0.3s ease;
+        user-select: none;
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      .ramo:hover {
+        background: linear-gradient(145deg, #f48fb1, #e47c9d);
+        box-shadow: 6px 6px 10px #b67288, -6px -6px 10px #ffbed4;
+        color: #5c0040;
+        transform: translateY(-3px);
+      }
+      .ramo:active {
+        box-shadow: inset 3px 3px 5px #b67288, inset -3px -3px 5px #ffbed4;
+        transform: translateY(1px);
+      }
+      .ramo.bloqueado {
+        background-color: #f3f3f3;
+        color: #999;
+        border-style: dashed;
+        cursor: not-allowed;
+        box-shadow: none;
+        background: none;
+      }
+      .ramo.aprobado {
+        background: linear-gradient(145deg, #d1bee7, #b695d3) !important;
+        color: #4a148c;
+        border-color: #6a1b9a;
+        text-decoration: line-through;
+        font-style: italic;
+        box-shadow: 4px 4px 8px #8a69a2, -4px -4px 8px #c6aee1;
+      }
+      .electivo {
+        background: linear-gradient(145deg, #ffecb3, #ffd54f);
+        border-color: #ff8f00;
+        color: #e65100;
+      }
+      .electivo:hover {
+        background: linear-gradient(145deg, #ffe082, #ffcc02);
+      }
+      .integrado {
+        background: linear-gradient(145deg, #c8e6c9, #a5d6a7);
+        border-color: #388e3c;
+        color: #1b5e20;
+      }
+      .integrado:hover {
+        background: linear-gradient(145deg, #a5d6a7, #81c784);
+      }
+      .ramo-numero {
+        position: absolute;
+        top: 2px;
+        right: 4px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7em;
+        font-weight: bold;
+      }
+      .prerequisitos {
+        position: absolute;
+        bottom: 2px;
+        left: 4px;
+        background: rgba(255, 0, 0, 0.8);
+        color: white;
+        border-radius: 3px;
+        padding: 1px 3px;
+        font-size: 0.6em;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Obstetricia y Puericultura UChile - Plan 2020</h1>
+
+    <div class="info-panel">
+      <div class="creditos-info">
+        Créditos aprobados: <span id="creditos-contador">0</span> / 236
+      </div>
+    </div>
+
+    <div class="malla-grid">
+      <div class="semestre" id="sem1">
+        <h2>1° Semestre</h2>
+        <div class="ciclo-header">CICLO INICIAL</div>
+        <div
+          class="ramo"
+          id="biologia_celular"
+          onclick="aprobar('biologia_celular')"
+        >
+          <div class="ramo-numero">1</div>
+          Biología Celular e Histología
+        </div>
+        <div
+          class="ramo"
+          id="anatomia_general"
+          onclick="aprobar('anatomia_general')"
+        >
+          <div class="ramo-numero">2</div>
+          Anatomía General
+        </div>
+        <div class="ramo" id="quimica_bioq" onclick="aprobar('quimica_bioq')">
+          <div class="ramo-numero">3</div>
+          Química y Bioquímica
+        </div>
+        <div class="ramo" id="matematicas" onclick="aprobar('matematicas')">
+          <div class="ramo-numero">4</div>
+          Matemáticas
+        </div>
+        <div class="ramo" id="intro_matrona" onclick="aprobar('intro_matrona')">
+          <div class="ramo-numero">5</div>
+          Introducción a la Matronería
+        </div>
+        <div
+          class="ramo electivo"
+          id="electivo_com1"
+          onclick="aprobar('electivo_com1')"
+        >
+          <div class="ramo-numero">6</div>
+          Electivo de Comunicación
+        </div>
+      </div>
+
+      <div class="semestre" id="sem2">
+        <h2>2° Semestre</h2>
+        <div
+          class="ramo bloqueado"
+          id="fisiologia_general"
+          onclick="aprobar('fisiologia_general')"
+        >
+          <div class="ramo-numero">7</div>
+          <div class="prerequisitos">1</div>
+          Fisiología General
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="anatomia_aplicada"
+          onclick="aprobar('anatomia_aplicada')"
+        >
+          <div class="ramo-numero">8</div>
+          <div class="prerequisitos">2</div>
+          Anatomía Aplicada a la Matronería
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="microbiologia"
+          onclick="aprobar('microbiologia')"
+        >
+          <div class="ramo-numero">9</div>
+          <div class="prerequisitos">1</div>
+          Microbiología y Parasitología
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="psicologia_general"
+          onclick="aprobar('psicologia_general')"
+        >
+          <div class="ramo-numero">10</div>
+          <div class="prerequisitos">5</div>
+          Psicología General y del Desarrollo
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="fundamentos_enf"
+          onclick="aprobar('fundamentos_enf')"
+        >
+          <div class="ramo-numero">11</div>
+          <div class="prerequisitos">2, 4</div>
+          Fundamentos de Enfermería
+        </div>
+        <div
+          class="ramo electivo bloqueado"
+          id="electivo_desarrollo"
+          onclick="aprobar('electivo_desarrollo')"
+        >
+          <div class="ramo-numero">12</div>
+          Electivo de Desarrollo del Pensamiento
+        </div>
+      </div>
+
+      <div class="semestre" id="sem3">
+        <h2>3° Semestre</h2>
+        <div
+          class="ramo bloqueado"
+          id="fisiopatologia"
+          onclick="aprobar('fisiopatologia')"
+        >
+          <div class="ramo-numero">13</div>
+          <div class="prerequisitos">7</div>
+          Fisiopatología
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="farmacologia"
+          onclick="aprobar('farmacologia')"
+        >
+          <div class="ramo-numero">14</div>
+          <div class="prerequisitos">3</div>
+          Farmacología
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="embriologia"
+          onclick="aprobar('embriologia')"
+        >
+          <div class="ramo-numero">15</div>
+          <div class="prerequisitos">8</div>
+          Embriología y Genética
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="enfermeria_medico"
+          onclick="aprobar('enfermeria_medico')"
+        >
+          <div class="ramo-numero">16</div>
+          <div class="prerequisitos">7, 11</div>
+          Enfermería Médico Quirúrgica
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="educacion_salud"
+          onclick="aprobar('educacion_salud')"
+        >
+          <div class="ramo-numero">17</div>
+          <div class="prerequisitos">11</div>
+          Educación para Salud
+        </div>
+        <div
+          class="ramo electivo bloqueado"
+          id="electivo_comunicacion"
+          onclick="aprobar('electivo_comunicacion')"
+        >
+          <div class="ramo-numero">18</div>
+          Electivo de Comunicación
+        </div>
+      </div>
+
+      <div class="semestre" id="sem4">
+        <h2>4° Semestre</h2>
+        <div class="ramo bloqueado" id="bioetica" onclick="aprobar('bioetica')">
+          <div class="ramo-numero">19</div>
+          <div class="prerequisitos">17</div>
+          Bioética
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="matroneria_neo1"
+          onclick="aprobar('matroneria_neo1')"
+        >
+          <div class="ramo-numero">20</div>
+          <div class="prerequisitos">14, 15</div>
+          Matronería y Neonatología I
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="clinica_enf_mq"
+          onclick="aprobar('clinica_enf_mq')"
+        >
+          <div class="ramo-numero">21</div>
+          <div class="prerequisitos">13, 14, 16</div>
+          Clínica Enfermería Médico Quirúrgica
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="salud_familiar"
+          onclick="aprobar('salud_familiar')"
+        >
+          <div class="ramo-numero">22</div>
+          <div class="prerequisitos">17</div>
+          Salud Familiar y Comunitaria
+        </div>
+        <div
+          class="ramo integrado bloqueado"
+          id="integrado_inicial"
+          onclick="aprobar('integrado_inicial')"
+        >
+          <div class="ramo-numero">23</div>
+          <div class="prerequisitos">13, 14, 16</div>
+          Integrado de Ciclo Inicial
+        </div>
+        <div
+          class="ramo electivo bloqueado"
+          id="electivo_etica"
+          onclick="aprobar('electivo_etica')"
+        >
+          <div class="ramo-numero">24</div>
+          Electivo de Ética
+        </div>
+      </div>
+
+      <div class="semestre" id="sem5">
+        <h2>5° Semestre</h2>
+        <div class="ciclo-header">CICLO INTERMEDIO</div>
+        <div
+          class="ramo bloqueado"
+          id="bioestadistica"
+          onclick="aprobar('bioestadistica')"
+        >
+          <div class="ramo-numero">25</div>
+          <div class="prerequisitos">9, 22</div>
+          Bioestadística
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="medicina_basada"
+          onclick="aprobar('medicina_basada')"
+        >
+          <div class="ramo-numero">26</div>
+          <div class="prerequisitos">20, 22</div>
+          Medicina Basada en Evidencia
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="matroneria_neo2"
+          onclick="aprobar('matroneria_neo2')"
+        >
+          <div class="ramo-numero">27</div>
+          <div class="prerequisitos">20, 23</div>
+          Matronería y Neonatología II
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="clinica_mat_neo1"
+          onclick="aprobar('clinica_mat_neo1')"
+        >
+          <div class="ramo-numero">28</div>
+          <div class="prerequisitos">20, 21, 23</div>
+          Clínica Matronería y Neonatología Integrada I
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="salud_sexual1"
+          onclick="aprobar('salud_sexual1')"
+        >
+          <div class="ramo-numero">29</div>
+          <div class="prerequisitos">20, 23</div>
+          Salud Sexual y Reproductiva I
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="salud_publica"
+          onclick="aprobar('salud_publica')"
+        >
+          <div class="ramo-numero">30</div>
+          <div class="prerequisitos">22, 23</div>
+          Salud Pública
+        </div>
+      </div>
+
+      <div class="semestre" id="sem6">
+        <h2>6° Semestre</h2>
+        <div
+          class="ramo bloqueado"
+          id="metodologia_inv"
+          onclick="aprobar('metodologia_inv')"
+        >
+          <div class="ramo-numero">31</div>
+          <div class="prerequisitos">25, 26, 30</div>
+          Metodología de la Investigación
+        </div>
+        <div class="ramo bloqueado" onclick="aprobar('clinica_mat_neo1')">
+          <div class="ramo-numero">28</div>
+          <div class="prerequisitos">20, 21, 23</div>
+          Clínica Matronería y Neonatología Integrada I
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="salud_sexual2"
+          onclick="aprobar('salud_sexual2')"
+        >
+          <div class="ramo-numero">32</div>
+          <div class="prerequisitos">27, 29</div>
+          Salud Sexual y Reproductiva II
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="clinica_mat_comunitaria"
+          onclick="aprobar('clinica_mat_comunitaria')"
+        >
+          <div class="ramo-numero">33</div>
+          <div class="prerequisitos">27, 29</div>
+          Clínica de Matronería Comunitaria y Atención Primaria de Salud I
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="gestion_salud"
+          onclick="aprobar('gestion_salud')"
+        >
+          <div class="ramo-numero">34</div>
+          <div class="prerequisitos">27, 30</div>
+          Gestión en Salud y Calidad
+        </div>
+        <div
+          class="ramo electivo bloqueado"
+          id="electivo_desarrollo_personal"
+          onclick="aprobar('electivo_desarrollo_personal')"
+        >
+          <div class="ramo-numero">35</div>
+          Electivo de Desarrollo Personal
+        </div>
+      </div>
+
+      <div class="semestre" id="sem7">
+        <h2>7° Semestre</h2>
+        <div
+          class="ramo bloqueado"
+          id="seminario_inv1"
+          onclick="aprobar('seminario_inv1')"
+        >
+          <div class="ramo-numero">36</div>
+          <div class="prerequisitos">28, 31</div>
+          Seminario de Investigación I
+        </div>
+        <div class="ramo bloqueado" onclick="aprobar('clinica_gestion_mat')">
+          <div class="ramo-numero">37</div>
+          <div class="prerequisitos">27, 28</div>
+          Clínica de Gestión del Cuidado de Matronería en Neonatología
+        </div>
+        <div class="ramo bloqueado" onclick="aprobar('clinica_gestion_obs')">
+          <div class="ramo-numero">38</div>
+          <div class="prerequisitos">27, 28</div>
+          Clínica de Gestión de Cuidados de Matronería en Obstetricia
+        </div>
+        <div class="ramo bloqueado" onclick="aprobar('clinica_mat_sexual')">
+          <div class="ramo-numero">39</div>
+          <div class="prerequisitos">28, 32</div>
+          Clínica de Matronería en Salud Sexual y Reproductiva
+        </div>
+        <div
+          class="ramo bloqueado"
+          onclick="aprobar('clinica_mat_comunitaria2')"
+        >
+          <div class="ramo-numero">40</div>
+          <div class="prerequisitos">32, 33</div>
+          Clínica de Matronería Comunitaria y Atención Primaria de Salud II
+        </div>
+        <div
+          class="ramo electivo bloqueado"
+          onclick="aprobar('electivo_responsabilidad')"
+        >
+          <div class="ramo-numero">41</div>
+          Electivo de Responsabilidad Social
+        </div>
+      </div>
+
+      <div class="semestre" id="sem8">
+        <h2>8° Semestre</h2>
+        <div class="ramo bloqueado" onclick="aprobar('clinica_gestion_mat')">
+          <div class="ramo-numero">37</div>
+          <div class="prerequisitos">27, 28</div>
+          Clínica de Gestión del Cuidado de Matronería en Neonatología
+        </div>
+        <div class="ramo bloqueado" onclick="aprobar('clinica_gestion_obs')">
+          <div class="ramo-numero">38</div>
+          <div class="prerequisitos">27, 28</div>
+          Clínica de Gestión de Cuidados de Matronería en Obstetricia
+        </div>
+        <div class="ramo bloqueado" onclick="aprobar('clinica_mat_sexual')">
+          <div class="ramo-numero">39</div>
+          <div class="prerequisitos">28, 32</div>
+          Clínica de Matronería en Salud Sexual y Reproductiva
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="seminario_inv2"
+          onclick="aprobar('seminario_inv2')"
+        >
+          <div class="ramo-numero">42</div>
+          <div class="prerequisitos">36</div>
+          Seminario de Investigación II
+        </div>
+        <div
+          class="ramo bloqueado"
+          id="gestion_cuidado_mat"
+          onclick="aprobar('gestion_cuidado_mat')"
+        >
+          <div class="ramo-numero">43</div>
+          <div class="prerequisitos">34</div>
+          Gestión del Cuidado de Matronería
+        </div>
+        <div
+          class="ramo integrado bloqueado"
+          id="integrado_intermedio"
+          onclick="aprobar('integrado_intermedio')"
+        >
+          <div class="ramo-numero">44</div>
+          <div class="prerequisitos">34, 36, 40</div>
+          Integrado de Ciclo Intermedio
+        </div>
+      </div>
+
+      <div class="semestre" id="sem9">
+        <h2>9° Semestre</h2>
+        <div class="ciclo-header">CICLO AVANZADO</div>
+        <div class="ramo bloqueado" onclick="aprobar('internado_mat_ap')">
+          <div class="ramo-numero">45</div>
+          <div class="prerequisitos">1 al 44</div>
+          Internado de Matronería en Atención Intrahospitalaria
+        </div>
+        <div class="ramo bloqueado" onclick="aprobar('internado_ap_salud')">
+          <div class="ramo-numero">46</div>
+          <div class="prerequisitos">1 al 44</div>
+          Internado de Matronería en Atención Primaria de Salud
+        </div>
+        <div
+          class="ramo integrado bloqueado"
+          onclick="aprobar('integrado_avanzado')"
+        >
+          <div class="ramo-numero">47</div>
+          <div class="prerequisitos">1 al 44</div>
+          Integrado de Ciclo Avanzado
+        </div>
+      </div>
+
+      <div class="semestre" id="sem10">
+        <h2>10° Semestre</h2>
+        <div class="ramo bloqueado" onclick="aprobar('internado_mat_ap')">
+          <div class="ramo-numero">45</div>
+          <div class="prerequisitos">1 al 44</div>
+          Internado de Matronería en Atención Intrahospitalaria
+        </div>
+        <div class="ramo bloqueado" onclick="aprobar('internado_ap_salud')">
+          <div class="ramo-numero">46</div>
+          <div class="prerequisitos">1 al 44</div>
+          Internado de Matronería en Atención Primaria de Salud
+        </div>
+        <div
+          class="ramo integrado bloqueado"
+          onclick="aprobar('integrado_avanzado')"
+        >
+          <div class="ramo-numero">47</div>
+          <div class="prerequisitos">1 al 44</div>
+          Integrado de Ciclo Avanzado
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Configuración completa basada en la malla oficial
+      const ramosConfig = {
+        // Semestre 1 - Sin prerrequisitos
+        biologia_celular: { numero: 1, creditos: 6, prerrequisitos: [] },
+        anatomia_general: { numero: 2, creditos: 5, prerrequisitos: [] },
+        quimica_bioq: { numero: 3, creditos: 6, prerrequisitos: [] },
+        matematicas: { numero: 4, creditos: 4, prerrequisitos: [] },
+        intro_matrona: { numero: 5, creditos: 4, prerrequisitos: [] },
+        electivo_com1: { numero: 6, creditos: 2, prerrequisitos: [] },
+
+        // Semestre 2
+        fisiologia_general: { numero: 7, creditos: 6, prerrequisitos: [1] },
+        anatomia_aplicada: { numero: 8, creditos: 4, prerrequisitos: [2] },
+        microbiologia: { numero: 9, creditos: 4, prerrequisitos: [1] },
+        psicologia_general: { numero: 10, creditos: 4, prerrequisitos: [5] },
+        fundamentos_enf: { numero: 11, creditos: 4, prerrequisitos: [2, 4] },
+        electivo_desarrollo: { numero: 12, creditos: 2, prerrequisitos: [] },
+
+        // Semestre 3
+        fisiopatologia: { numero: 13, creditos: 6, prerrequisitos: [7] },
+        farmacologia: { numero: 14, creditos: 4, prerrequisitos: [3] },
+        embriologia: { numero: 15, creditos: 4, prerrequisitos: [8] },
+        enfermeria_medico: { numero: 16, creditos: 4, prerrequisitos: [7, 11] },
+        educacion_salud: { numero: 17, creditos: 4, prerrequisitos: [11] },
+        electivo_comunicacion: { numero: 18, creditos: 2, prerrequisitos: [] },
+
+        // Semestre 4
+        bioetica: { numero: 19, creditos: 2, prerrequisitos: [17] },
+        matroneria_neo1: { numero: 20, creditos: 6, prerrequisitos: [14, 15] },
+        clinica_enf_mq: {
+          numero: 21,
+          creditos: 4,
+          prerrequisitos: [13, 14, 16],
+        },
+        salud_familiar: { numero: 22, creditos: 4, prerrequisitos: [17] },
+        integrado_inicial: {
+          numero: 23,
+          creditos: 4,
+          prerrequisitos: [13, 14, 16],
+        },
+        electivo_etica: { numero: 24, creditos: 2, prerrequisitos: [] },
+
+        // Semestre 5
+        bioestadistica: { numero: 25, creditos: 4, prerrequisitos: [9, 22] },
+        medicina_basada: { numero: 26, creditos: 4, prerrequisitos: [20, 22] },
+        matroneria_neo2: { numero: 27, creditos: 6, prerrequisitos: [20, 23] },
+        clinica_mat_neo1: {
+          numero: 28,
+          creditos: 8,
+          prerrequisitos: [20, 21, 23],
+        },
+        salud_sexual1: { numero: 29, creditos: 4, prerrequisitos: [20, 23] },
+        salud_publica: { numero: 30, creditos: 4, prerrequisitos: [22, 23] },
+
+        // Semestre 6
+        metodologia_inv: {
+          numero: 31,
+          creditos: 4,
+          prerrequisitos: [25, 26, 30],
+        },
+        salud_sexual2: { numero: 32, creditos: 4, prerrequisitos: [27, 29] },
+        clinica_mat_comunitaria: {
+          numero: 33,
+          creditos: 8,
+          prerrequisitos: [27, 29],
+        },
+        gestion_salud: { numero: 34, creditos: 4, prerrequisitos: [27, 30] },
+        electivo_desarrollo_personal: {
+          numero: 35,
+          creditos: 2,
+          prerrequisitos: [],
+        },
+
+        // Semestre 7
+        seminario_inv1: { numero: 36, creditos: 4, prerrequisitos: [28, 31] },
+        clinica_gestion_mat: {
+          numero: 37,
+          creditos: 8,
+          prerrequisitos: [27, 28],
+        },
+        clinica_gestion_obs: {
+          numero: 38,
+          creditos: 8,
+          prerrequisitos: [27, 28],
+        },
+        clinica_mat_sexual: {
+          numero: 39,
+          creditos: 8,
+          prerrequisitos: [28, 32],
+        },
+        clinica_mat_comunitaria2: {
+          numero: 40,
+          creditos: 8,
+          prerrequisitos: [32, 33],
+        },
+        electivo_responsabilidad: {
+          numero: 41,
+          creditos: 2,
+          prerrequisitos: [],
+        },
+
+        // Semestre 8
+        seminario_inv2: { numero: 42, creditos: 4, prerrequisitos: [36] },
+        gestion_cuidado_mat: { numero: 43, creditos: 4, prerrequisitos: [34] },
+        integrado_intermedio: {
+          numero: 44,
+          creditos: 4,
+          prerrequisitos: [34, 36, 40],
+        },
+
+        // Semestre 9 y 10 - Prerrequisito: todos los ramos del 1 al 44
+        internado_mat_ap: {
+          numero: 45,
+          creditos: 15,
+          prerrequisitos: [
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+            20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
+            37, 38, 39, 40, 41, 42, 43, 44,
+          ],
+        },
+        internado_ap_salud: {
+          numero: 46,
+          creditos: 15,
+          prerrequisitos: [
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+            20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
+            37, 38, 39, 40, 41, 42, 43, 44,
+          ],
+        },
+        integrado_avanzado: {
+          numero: 47,
+          creditos: 4,
+          prerrequisitos: [
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+            20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
+            37, 38, 39, 40, 41, 42, 43, 44,
+          ],
+        },
+      };
+
+      // Mapeo inverso: número -> ID
+      const numeroAId = {};
+      for (const [id, config] of Object.entries(ramosConfig)) {
+        numeroAId[config.numero] = id;
+      }
+
+      // Funciones localStorage
+      function obtenerAprobados() {
+        const data = localStorage.getItem("mallaAprobados2020");
+        return data ? JSON.parse(data) : [];
+      }
+
+      function guardarAprobados(aprobados) {
+        localStorage.setItem("mallaAprobados2020", JSON.stringify(aprobados));
+      }
+
+      function calcularCreditosAprobados() {
+        const aprobados = obtenerAprobados();
+        return aprobados.reduce((sum, ramoId) => {
+          const config = ramosConfig[ramoId];
+          return sum + (config ? config.creditos : 0);
+        }, 0);
+      }
+
+      function actualizarContadorCreditos() {
+        const creditos = calcularCreditosAprobados();
+        document.getElementById("creditos-contador").textContent = creditos;
+      }
+
+      function verificarPrerrequisitos(ramoId) {
+        const config = ramosConfig[ramoId];
+        if (!config) return false;
+
+        const aprobados = obtenerAprobados();
+        const numerosAprobados = aprobados
+          .map((id) => ramosConfig[id]?.numero)
+          .filter(Boolean);
+
+        // Verificar que TODOS los prerrequisitos estén aprobados
+        return config.prerrequisitos.every((numPrereq) =>
+          numerosAprobados.includes(numPrereq)
+        );
+      }
+
+      function actualizarDesbloqueos() {
+        // Recorrer todos los ramos y verificar prerrequisitos
+        const aprobados = obtenerAprobados();
+        for (const [ramoId, config] of Object.entries(ramosConfig)) {
+          const elementos = document.querySelectorAll(
+            `[onclick="aprobar('${ramoId}')"]`
+          );
+          if (!elementos.length) continue;
+
+          // ¿Cumple prerrequisitos?
+          const puedeDesbloquear =
+            config.prerrequisitos.length === 0 ||
+            verificarPrerrequisitos(ramoId);
+
+          for (const elem of elementos) {
+            if (aprobados.includes(ramoId)) {
+              elem.classList.add("aprobado");
+              elem.classList.remove("bloqueado");
+            } else if (puedeDesbloquear) {
+              elem.classList.remove("bloqueado");
+            } else {
+              elem.classList.add("bloqueado");
+            }
+          }
+        }
+      }
+
+      // Marcar / desmarcar ramos (toggle)
+      function aprobar(ramoId) {
+        const elementos = document.querySelectorAll(
+          `[onclick="aprobar('${ramoId}')"]`
+        );
+        if (!elementos.length) return;
+
+        // Verificar si está bloqueado usando el primer elemento
+        const primerElem = elementos[0];
+        if (primerElem.classList.contains("bloqueado")) return;
+
+        const aprobados = obtenerAprobados();
+        const idx = aprobados.indexOf(ramoId);
+
+        if (idx === -1) {
+          // Marcar como aprobado
+          aprobados.push(ramoId);
+          for (const elem of elementos) {
+            elem.classList.add("aprobado");
+          }
+        } else {
+          // Desmarcar (quitar aprobación)
+          aprobados.splice(idx, 1);
+          for (const elem of elementos) {
+            elem.classList.remove("aprobado");
+          }
+        }
+
+        guardarAprobados(aprobados);
+        actualizarDesbloqueos();
+        actualizarContadorCreditos();
+      }
+
+      // Inicialización al cargar la página
+      window.addEventListener("DOMContentLoaded", () => {
+        actualizarDesbloqueos();
+        actualizarContadorCreditos();
+      });
+    </script>
+  </body>
+</html>
