@@ -163,11 +163,21 @@
   </head>
 
   <body>
-    <h1>Obstetricia y Puericultura UChile - Plan 2020</h1>
+    <h1>Obstetricia y Puericultura UA - Plan 2024</h1>
 
     <div class="info-panel">
       <div class="creditos-info">
         Créditos aprobados: <span id="creditos-contador">0</span> / 236
+      </div>
+      <div>
+        Progreso: <span id="progreso-porcentaje">0</span>% (<span
+          id="ramos-contador"
+          >0</span
+        >
+        de <span id="total-ramos">0</span> ramos)
+      </div>
+      <div>
+        Última actualización: <span id="fecha-actualizacion">Nunca</span>
       </div>
     </div>
 
@@ -306,7 +316,7 @@
         >
           <div class="ramo-numero">16</div>
           <div class="prerequisitos">7, 11</div>
-          Enfermería Médico Quirúrgica
+          Enfermería Médico Quirúrgico
         </div>
         <div
           class="ramo bloqueado"
@@ -350,7 +360,7 @@
         >
           <div class="ramo-numero">21</div>
           <div class="prerequisitos">13, 14, 16</div>
-          Clínica Enfermería Médico Quirúrgica
+          Clínica Enfermería Médico Quirúrgico
         </div>
         <div
           class="ramo bloqueado"
@@ -795,6 +805,37 @@
       function actualizarContadorCreditos() {
         const creditos = calcularCreditosAprobados();
         document.getElementById("creditos-contador").textContent = creditos;
+
+        // Actualizar estadísticas de progreso
+        actualizarEstadisticasProgreso();
+      }
+
+      function actualizarEstadisticasProgreso() {
+        const aprobados = obtenerAprobados();
+        const totalRamos = Object.keys(ramosConfig).length;
+        const porcentaje = Math.round((aprobados.length / totalRamos) * 100);
+
+        // Actualizar elementos de la interfaz
+        document.getElementById("progreso-porcentaje").textContent = porcentaje;
+        document.getElementById("ramos-contador").textContent =
+          aprobados.length;
+        document.getElementById("total-ramos").textContent = totalRamos;
+
+        // Mostrar fecha de última actualización
+        const stats = getCookie("mallaStats2020");
+        if (stats) {
+          const statsData = JSON.parse(stats);
+          const fecha = new Date(statsData.fechaUltimaActualizacion);
+          document.getElementById("fecha-actualizacion").textContent =
+            fecha.toLocaleDateString() +
+            " " +
+            fecha.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+        } else {
+          document.getElementById("fecha-actualizacion").textContent = "Nunca";
+        }
       }
 
       function verificarPrerrequisitos(ramoId) {
@@ -870,6 +911,70 @@
         guardarAprobados(aprobados);
         actualizarDesbloqueos();
         actualizarContadorCreditos();
+      }
+
+      // Funciones para manejo de cookies
+      function setCookie(name, value, days = 365) {
+        const expires = new Date();
+        expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+        document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
+      }
+
+      function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(";");
+        for (let i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) === " ") c = c.substring(1, c.length);
+          if (c.indexOf(nameEQ) === 0)
+            return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+      }
+
+      function deleteCookie(name) {
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      }
+
+      // Funciones localStorage con respaldo en cookies
+      function obtenerAprobados() {
+        // Intentar primero localStorage
+        let data = localStorage.getItem("mallaAprobados2020");
+        if (data) {
+          const aprobados = JSON.parse(data);
+          // Sincronizar con cookie
+          setCookie("mallaAprobados2020", JSON.stringify(aprobados));
+          return aprobados;
+        }
+
+        // Si no hay localStorage, intentar cookie
+        data = getCookie("mallaAprobados2020");
+        if (data) {
+          const aprobados = JSON.parse(data);
+          // Sincronizar de vuelta a localStorage
+          localStorage.setItem("mallaAprobados2020", JSON.stringify(aprobados));
+          return aprobados;
+        }
+
+        return [];
+      }
+
+      function guardarAprobados(aprobados) {
+        const jsonData = JSON.stringify(aprobados);
+        // Guardar en ambos lugares
+        localStorage.setItem("mallaAprobados2020", jsonData);
+        setCookie("mallaAprobados2020", jsonData);
+
+        // Guardar también estadísticas del progreso
+        const stats = {
+          totalAprobados: aprobados.length,
+          creditosAprobados: calcularCreditosAprobados(),
+          fechaUltimaActualizacion: new Date().toISOString(),
+          porcentajeAvance: Math.round(
+            (aprobados.length / Object.keys(ramosConfig).length) * 100
+          ),
+        };
+        setCookie("mallaStats2020", JSON.stringify(stats));
       }
 
       // Inicialización al cargar la página
